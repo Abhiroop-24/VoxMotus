@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-label="Static YOLO person detection demo frame">
+  <defs>
+    <linearGradient id="scene" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#101926"/>
+      <stop offset="100%" stop-color="#0a0d12"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1280" height="720" fill="url(#scene)"/>
+  <rect x="0" y="500" width="1280" height="220" fill="#19222a"/>
+  <rect x="80" y="340" width="200" height="160" fill="#1f2b35"/>
+  <rect x="320" y="300" width="220" height="200" fill="#22313d"/>
+  <rect x="580" y="260" width="250" height="240" fill="#263744"/>
+  <rect x="880" y="320" width="300" height="180" fill="#20303b"/>
+
+  <rect x="360" y="230" width="210" height="420" rx="8" fill="none" stroke="#3bff9f" stroke-width="4"/>
+  <rect x="740" y="190" width="240" height="460" rx="8" fill="none" stroke="#3bff9f" stroke-width="4"/>
+
+  <rect x="360" y="194" width="248" height="30" rx="6" fill="#102217" stroke="#3bff9f"/>
+  <text x="374" y="214" fill="#7fffc4" font-size="19" font-family="monospace">person 0.92  dist=2.04m</text>
+
+  <rect x="740" y="154" width="248" height="30" rx="6" fill="#102217" stroke="#3bff9f"/>
+  <text x="754" y="174" fill="#7fffc4" font-size="19" font-family="monospace">person 0.86  dist=3.28m</text>
+
+  <rect x="20" y="20" width="450" height="120" rx="12" fill="#0a141c" stroke="#315068"/>
+  <text x="44" y="64" fill="#8ee3ff" font-size="30" font-family="monospace">YOLO Person Detection</text>
+  <text x="44" y="100" fill="#a8b7c2" font-size="22" font-family="monospace">Static Pi camera demo with distance overlay</text>
+
+  <rect x="965" y="24" width="291" height="140" rx="12" fill="#081119" stroke="#3b4f5f"/>
+  <text x="988" y="62" fill="#a4deff" font-size="20" font-family="monospace">mode: yolo</text>
+  <text x="988" y="92" fill="#a4deff" font-size="20" font-family="monospace">count: 2</text>
+  <text x="988" y="122" fill="#a4deff" font-size="20" font-family="monospace">nearest: 2.04m</text>
+</svg>

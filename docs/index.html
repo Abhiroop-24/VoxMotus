@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ANTARDRISHTI Demo</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="card hero">
+      <div class="hero-left">
+        <div class="hero-id">ANTARDRISHTI</div>
+        <div class="hero-text">Blind-first AI Coach - static demo for GitHub Pages</div>
+      </div>
+      <div class="badge-row">
+        <div class="badge ok" id="runtimeBadge">runtime: demo</div>
+        <div class="badge ok" id="gpuBadge">compute: torch/cuda:0</div>
+        <div class="badge ok" id="piBadge">pi stream: online</div>
+      </div>
+    </header>
+
+    <section class="card panel">
+      <div class="title">ANTARDRISHTI // LIVE ANNOTATED FEED <span class="muted">Laptop Pose is Primary</span></div>
+      <div class="video-shell">
+        <img class="video" src="assets/mediapipe-demo.svg" alt="Static MediaPipe demo feed" />
+      </div>
+      <div class="video-grid">
+        <div>
+          <div class="video-caption">Laptop Camera (MediaPipe pose source)</div>
+          <img class="video-small" src="assets/mediapipe-demo.svg" alt="Static laptop MediaPipe frame" />
+        </div>
+        <div>
+          <div class="video-caption">Pi Camera (YOLO people boxes + distance)</div>
+          <img class="video-small" src="assets/yolo-demo.svg" alt="Static Pi YOLO frame" />
+        </div>
+      </div>
+      <div class="mono-row">
+        <div class="muted" id="runtimeStatus">Runtime: demo mode</div>
+        <div class="muted" id="cameraStatus">Cameras: laptop=on, pi=on</div>
+        <div class="muted" id="poseStatus">Pose fusion: src=laptop strategy=laptop_primary q(l/p)=0.91/0.73</div>
+        <div class="muted" id="videoPath">Output video: static-demo.mp4</div>
+      </div>
+    </section>
+
+    <section class="card panel">
+      <div class="title">COACH CONSOLE</div>
+      <div class="grid">
+        <div class="metric"><div class="label">STATE</div><div class="value" id="state">WORKOUT_SQUATS</div></div>
+        <div class="metric"><div class="label">ACTIVITY</div><div class="value" id="activity">SQUAT</div></div>
+        <div class="metric"><div class="label">DIFFICULTY</div><div class="value" id="difficulty">MEDIUM</div></div>
+        <div class="metric"><div class="label">CAMERA</div><div class="value" id="camera">LAPTOP</div></div>
+        <div class="metric"><div class="label">REPS</div><div class="value" id="reps">7/12</div></div>
+        <div class="metric"><div class="label">SKILL SCORE</div><div class="value" id="score">86</div></div>
+      </div>
+
+      <div class="feedback" id="feedback">Good depth. Keep your chest tall and drive through your heels.</div>
+      <div class="muted" id="obstacleText">Pi detector: people=YES | mode=yolo:ON | count=2 | nearest=2.04m</div>
+      <div class="muted" id="peopleText">People distances: P1:2.04m | P2:3.28m</div>
+      <div class="muted" id="flowText">Flow: finish squats, take a 10 second break, then continue.</div>
+      <div class="muted" id="planText">Plan: squats -> sit-ups -> jumping jacks | Next: situp | break 10s</div>
+      <div class="muted" id="piControlText">Pi auto-start: enabled | ok=yes | attempts=1 | healthy</div>
+      <div class="muted" id="errorDetailText">Errors: none</div>
+      <div class="muted" id="aiText">Local AI: squat (0.93), torch:cuda:0 | GPU=RTX 2050</div>
+      <div class="muted" id="modelText">Model source: activity_weights.json | trusted=yes | min_conf=0.82</div>
+      <div class="muted" id="voiceText">Voice: piper (requested=auto) | queue=0 | rephrase=off</div>
+      <div class="muted" id="syncText">Sync: gesture=start | spoken=Session started. Choose difficulty. | lock=off</div>
+      <div class="muted" id="trainingText">Dataset capture: off | total=0 | buffer=0 | file=-</div>
+      <div class="muted" id="calibText">Calibration: squat=ready thresholds=108/157</div>
+
+      <div class="controls">
+        <button class="primary" onclick="demoAction('Start')">Start</button>
+        <button onclick="demoAction('Pause/Resume')">Pause/Resume</button>
+        <button onclick="demoAction('Stop')">Stop</button>
+        <button onclick="demoAction('Easy')">Easy</button>
+        <button onclick="demoAction('Medium')">Medium</button>
+        <button onclick="demoAction('Tough')">Tough</button>
+        <button onclick="demoAction('Next Exercise')">Next Exercise</button>
+        <button onclick="demoAction('Repeat')">Repeat</button>
+        <button onclick="speakLine()">Speak</button>
+        <button class="wide" onclick="demoAction('Toggle Pi Person Detector')">Toggle Pi Person Detector</button>
+      </div>
+
+      <div class="add-exercise">
+        <input id="addExerciseInput" placeholder="add exercise: squat, situp, jumping_jack, pushup" />
+        <button onclick="addExercise()">Add Exercise</button>
+      </div>
+
+      <div class="muted">PS4 alignment: pose estimation, joint analysis, reference comparison, quantified feedback.</div>
+      <div class="demo-note" id="demoNotice">Demo mode: controls are visual only (no backend).</div>
+    </section>
+  </div>
+
+  <script>
+    let demoTimer = null;
+
+    const demoFrames = [
+      {
+        state: 'WAIT_START_GESTURE',
+        activity: 'IDLE',
+        difficulty: '-',
+        camera: 'LAPTOP',
+        reps: '0/12',
+        score: '0',
+        feedback: 'Welcome to ANTARDRISHTI. Show one palm to start the guided workout.',
+        flowText: 'Flow: waiting for one palm start gesture.',
+        planText: 'Plan: squats -> sit-ups -> jumping jacks | Next: squats',
+        obstacleText: 'Pi detector: people=NO | mode=yolo:ON | count=0 | nearest=n/a',
+        peopleText: 'People: none',
+        syncText: 'Sync: gesture=- | spoken=Welcome to ANTARDRISHTI. | lock=on',
+        aiText: 'Local AI: idle (0.97), torch:cuda:0 | GPU=RTX 2050',
+        runtimeStatus: 'Runtime: demo timeline 1/10'
+      },
+      {
+        state: 'WAIT_DIFFICULTY',
+        activity: 'IDLE',
+        difficulty: '-',
+        camera: 'LAPTOP',
+        reps: '0/12',
+        score: '18',
+        feedback: 'Great. Now show 1, 2, or 3 fingers to pick difficulty.',
+        flowText: 'Flow: awaiting difficulty selection.',
+        planText: 'Plan: squats -> sit-ups -> jumping jacks | Next: squats',
+        obstacleText: 'Pi detector: people=NO | mode=yolo:ON | count=0 | nearest=n/a',
+        peopleText: 'People: none',
+        syncText: 'Sync: gesture=start | spoken=Choose difficulty. | lock=on',
+        aiText: 'Local AI: standing (0.81), torch:cuda:0 | GPU=RTX 2050',
+        runtimeStatus: 'Runtime: demo timeline 2/10'
+      },
+      {
+        state: 'READY',
+        activity: 'STANDING',
+        difficulty: 'MEDIUM',
+        camera: 'LAPTOP',
+        reps: '0/12',
+        score: '42',
+        feedback: 'Medium selected. Start squats when you are ready.',
+        flowText: 'Flow: workout starting in 3...2...1.',
+        planText: 'Plan: squats -> sit-ups -> jumping jacks | Next: squats',
+        obstacleText: 'Pi detector: people=NO | mode=yolo:ON | count=0 | nearest=n/a',
+        peopleText: 'People: none',
+        syncText: 'Sync: gesture=difficulty_medium | spoken=Medium selected. | lock=off',
+        aiText: 'Local AI: standing (0.89), torch:cuda:0 | GPU=RTX 2050',
+        runtimeStatus: 'Runtime: demo timeline 3/10'
+      },
+      {
+        state: 'WORKOUT_SQUATS',
+        activity: 'SQUAT',
+        difficulty: 'MEDIUM',
+        camera: 'LAPTOP',
+        reps: '2/12',
+        score: '74',
+        feedback: 'Nice form. Keep your chest up and knees tracking forward.',
+        flowText: 'Flow: continue controlled squat reps.',
+        planText: 'Plan: squats -> sit-ups -> jumping jacks | Next: squats',
+        obstacleText: 'Pi detector: people=YES | mode=yolo:ON | count=1 | nearest=3.84m',
+        peopleText: 'People distances: P1:3.84m',
+        syncText: 'Sync: gesture=- | spoken=Nice form. Keep going. | lock=off',
+        aiText: 'Local AI: squat (0.90), torch:cuda:0 | GPU=RTX 2050',
+        runtimeStatus: 'Runtime: demo timeline 4/10'
+      },
+      {
+        state: 'WORKOUT_SQUATS',
+        activity: 'SQUAT',
+        difficulty: 'MEDIUM',
+        camera: 'LAPTOP',
+        reps: '5/12',
+        score: '81',
+        feedback: 'Halfway there. Breathe out as you stand up.',
+        flowText: 'Flow: squat set in progress.',
+        planText: 'Plan: squats -> sit-ups -> jumping jacks | Next: squats',
+        obstacleText: 'Pi detector: people=YES | mode=yolo:ON | count=2 | nearest=2.61m',
+        peopleText: 'People distances: P1:2.61m | P2:3.12m',
+        syncText: 'Sync: gesture=- | spoken=Halfway there. | lock=off',
+        aiText: 'Local AI: squat (0.93), torch:cuda:0 | GPU=RTX 2050',
+        runtimeStatus: 'Runtime: demo timeline 5/10'
+      },
+      {
+        state: 'WORKOUT_SQUATS',
+        activity: 'SQUAT',
+        difficulty: 'MEDIUM',
+        camera: 'LAPTOP',
+        reps: '9/12',
+        score: '86',
+        feedback: 'Excellent depth. Three reps left.',
+        flowText: 'Flow: push through the final squat reps.',
+        planText: 'Plan: squats -> sit-ups -> jumping jacks | Next: squats',
+        obstacleText: 'Pi detector: people=YES | mode=yolo:ON | count=2 | nearest=2.11m',
+        peopleText: 'People distances: P1:2.11m | P2:3.03m',
+        syncText: 'Sync: gesture=- | spoken=Three reps left. | lock=off',
+        aiText: 'Local AI: squat (0.95), torch:cuda:0 | GPU=RTX 2050',
+        runtimeStatus: 'Runtime: demo timeline 6/10'
+      },
+      {
+        state: 'BREAK',
+        activity: 'IDLE',
+        difficulty: 'MEDIUM',
+        camera: 'LAPTOP',
+        reps: '12/12',
+        score: '88',
+        feedback: 'Squats complete. Take a 10 second break and prepare for sit-ups.',
+        flowText: 'Flow: break active, 10 seconds remaining.',
+        planText: 'Plan: squats -> sit-ups -> jumping jacks | Next: sit-up | break 10s',
+        obstacleText: 'Pi detector: people=NO | mode=yolo:ON | count=0 | nearest=n/a',
+        peopleText: 'People: none',
+        syncText: 'Sync: gesture=next | spoken=Take a short break. | lock=on',
+        aiText: 'Local AI: transition (0.80), torch:cuda:0 | GPU=RTX 2050',
+        runtimeStatus: 'Runtime: demo timeline 7/10'
+      },
+      {
+        state: 'WORKOUT_SITUPS',
+        activity: 'SITUP',
+        difficulty: 'MEDIUM',
+        camera: 'LAPTOP',
+        reps: '3/10',
+        score: '90',
+        feedback: 'Sit-up phase started. Keep your neck relaxed and core engaged.',
+        flowText: 'Flow: sit-up set in progress.',
+        planText: 'Plan: squats -> sit-ups -> jumping jacks | Next: sit-up',
+        obstacleText: 'Pi detector: people=YES | mode=yolo:ON | count=1 | nearest=2.88m',
+        peopleText: 'People distances: P1:2.88m',
+        syncText: 'Sync: gesture=start | spoken=Sit-ups started. | lock=off',
+        aiText: 'Local AI: situp (0.87), torch:cuda:0 | GPU=RTX 2050',
+        runtimeStatus: 'Runtime: demo timeline 8/10'
+      },
+      {
+        state: 'WORKOUT_SITUPS',
+        activity: 'SITUP',
+        difficulty: 'MEDIUM',
+        camera: 'LAPTOP',
+        reps: '8/10',
+        score: '92',
+        feedback: 'Strong rhythm. Two reps left on sit-ups.',
+        flowText: 'Flow: finishing sit-up set.',
+        planText: 'Plan: squats -> sit-ups -> jumping jacks | Next: jumping jack',
+        obstacleText: 'Pi detector: people=YES | mode=yolo:ON | count=2 | nearest=2.34m',
+        peopleText: 'People distances: P1:2.34m | P2:3.09m',
+        syncText: 'Sync: gesture=- | spoken=Two reps left. | lock=off',
+        aiText: 'Local AI: situp (0.91), torch:cuda:0 | GPU=RTX 2050',
+        runtimeStatus: 'Runtime: demo timeline 9/10'
+      },
+      {
+        state: 'WORKOUT_JUMPING_JACKS',
+        activity: 'JUMPING_JACK',
+        difficulty: 'MEDIUM',
+        camera: 'PI',
+        reps: '2/15',
+        score: '94',
+        feedback: 'Great transition. Start jumping jacks with full arm extension.',
+        flowText: 'Flow: jumping jacks in progress.',
+        planText: 'Plan: squats -> sit-ups -> jumping jacks | Next: complete session',
+        obstacleText: 'Pi detector: people=YES | mode=yolo:ON | count=1 | nearest=2.04m',
+        peopleText: 'People distances: P1:2.04m',
+        syncText: 'Sync: gesture=next | spoken=Jumping jacks started. | lock=off',
+        aiText: 'Local AI: jumping_jack (0.89), torch:cuda:0 | GPU=RTX 2050',
+        runtimeStatus: 'Runtime: demo timeline 10/10'
+      }
+    ];
+
+    function updateNotice(text) {
+      const now = new Date();
+      const stamp = now.toLocaleTimeString();
+      document.getElementById('demoNotice').textContent = 'Demo mode - ' + text + ' at ' + stamp + ' (no backend action).';
+    }
+
+    function setText(id, value) {
+      const node = document.getElementById(id);
+      if (node && typeof value === 'string') {
+        node.textContent = value;
+      }
+    }
+
+    function applyFrame(frame) {
+      setText('state', frame.state);
+      setText('activity', frame.activity);
+      setText('difficulty', frame.difficulty);
+      setText('camera', frame.camera);
+      setText('reps', frame.reps);
+      setText('score', frame.score);
+      setText('feedback', frame.feedback);
+      setText('flowText', frame.flowText);
+      setText('planText', frame.planText);
+      setText('obstacleText', frame.obstacleText);
+      setText('peopleText', frame.peopleText);
+      setText('syncText', frame.syncText);
+      setText('aiText', frame.aiText);
+      setText('runtimeStatus', frame.runtimeStatus);
+    }
+
+    function runTenSecondDemo() {
+      if (demoTimer) {
+        clearInterval(demoTimer);
+      }
+
+      let index = 0;
+      applyFrame(demoFrames[0]);
+      updateNotice('10-second coach timeline started');
+
+      demoTimer = setInterval(() => {
+        index += 1;
+        if (index >= demoFrames.length) {
+          clearInterval(demoTimer);
+          demoTimer = null;
+          updateNotice('10-second coach timeline complete');
+          return;
+        }
+        applyFrame(demoFrames[index]);
+      }, 1000);
+    }
+
+    function demoAction(action) {
+      if (action === 'Start') {
+        runTenSecondDemo();
+        return;
+      }
+      updateNotice(action + ' clicked');
+    }
+
+    function speakLine() {
+      const text = prompt('Coach line to speak (demo only):');
+      if (!text) {
+        return;
+      }
+      updateNotice('Speak requested: "' + text + '"');
+    }
+
+    function addExercise() {
+      const input = document.getElementById('addExerciseInput');
+      const value = String(input.value || '').trim();
+      if (!value) {
+        updateNotice('Please type an exercise name first');
+        return;
+      }
+      updateNotice('Add Exercise requested: "' + value + '"');
+      input.value = '';
+    }
+
+    window.addEventListener('load', runTenSecondDemo);
+  </script>
+</body>
+</html>
