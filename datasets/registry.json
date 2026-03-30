@@ -1,0 +1,129 @@
+{
+  "datasets": [
+    {
+      "id": "antardrishti_collected_angles",
+      "type": "local_capture",
+      "manual": true,
+      "description": "Your own captured, labeled angle dataset from runtime collection mode.",
+      "landing_page": "outputs/datasets/",
+      "license": "project-internal"
+    },
+    {
+      "id": "coco_keypoints_2017",
+      "type": "pose_keypoints",
+      "manual": false,
+      "description": "COCO 2017 images and keypoint annotations for pose pretraining.",
+      "license": "CC BY 4.0",
+      "files": [
+        {
+          "name": "annotations_trainval2017.zip",
+          "url": "http://images.cocodataset.org/annotations/annotations_trainval2017.zip"
+        },
+        {
+          "name": "train2017.zip",
+          "url": "http://images.cocodataset.org/zips/train2017.zip"
+        },
+        {
+          "name": "val2017.zip",
+          "url": "http://images.cocodataset.org/zips/val2017.zip"
+        }
+      ]
+    },
+    {
+      "id": "coco_annotations_2017",
+      "type": "pose_keypoints",
+      "manual": false,
+      "description": "COCO 2017 annotations only (smaller, fast to download).",
+      "license": "CC BY 4.0",
+      "files": [
+        {
+          "name": "annotations_trainval2017.zip",
+          "url": "http://images.cocodataset.org/annotations/annotations_trainval2017.zip"
+        }
+      ]
+    },
+    {
+      "id": "ucf101",
+      "type": "action_recognition",
+      "manual": false,
+      "description": "UCF101 action videos for motion/activity diversity.",
+      "license": "dataset-specific",
+      "files": [
+        {
+          "name": "UCF101.rar",
+          "url": "https://www.crcv.ucf.edu/data/UCF101/UCF101.rar"
+        }
+      ]
+    },
+    {
+      "id": "ucf101_splits",
+      "type": "action_recognition",
+      "manual": false,
+      "description": "UCF101 train/test split files for recognition and detection tasks.",
+      "license": "dataset-specific",
+      "files": [
+        {
+          "name": "UCF101TrainTestSplits-RecognitionTask.zip",
+          "url": "https://www.crcv.ucf.edu/data/UCF101/UCF101TrainTestSplits-RecognitionTask.zip"
+        },
+        {
+          "name": "UCF101TrainTestSplits-DetectionTask.zip",
+          "url": "https://www.crcv.ucf.edu/data/UCF101/UCF101TrainTestSplits-DetectionTask.zip"
+        }
+      ]
+    },
+    {
+      "id": "uci_har_smartphone",
+      "type": "human_activity",
+      "manual": false,
+      "description": "UCI HAR smartphone activity dataset (small benchmark for non-video activity classification).",
+      "license": "dataset-specific",
+      "files": [
+        {
+          "name": "human+activity+recognition+using+smartphones.zip",
+          "url": "https://archive.ics.uci.edu/static/public/240/human+activity+recognition+using+smartphones.zip"
+        }
+      ]
+    },
+    {
+      "id": "kaggle_activity_reference",
+      "type": "kaggle_reference",
+      "manual": true,
+      "description": "Kaggle requires API credentials on this machine to download datasets.",
+      "landing_page": "https://www.kaggle.com/datasets",
+      "license": "dataset-specific"
+    },
+    {
+      "id": "mpii_human_pose",
+      "type": "pose_keypoints",
+      "manual": true,
+      "description": "MPII Human Pose dataset. Registration/terms required.",
+      "landing_page": "http://human-pose.mpi-inf.mpg.de/",
+      "license": "dataset-specific"
+    },
+    {
+      "id": "human36m",
+      "type": "3d_pose",
+      "manual": true,
+      "description": "Human3.6M 3D human pose benchmark. Registration required.",
+      "landing_page": "http://vision.imar.ro/human3.6m/",
+      "license": "dataset-specific"
+    },
+    {
+      "id": "posetrack",
+      "type": "pose_tracking",
+      "manual": true,
+      "description": "PoseTrack benchmark for multi-person articulated pose tracking.",
+      "landing_page": "https://posetrack.net/",
+      "license": "dataset-specific"
+    },
+    {
+      "id": "finegym",
+      "type": "fine_grained_action",
+      "manual": true,
+      "description": "FineGym fine-grained sports action benchmark.",
+      "landing_page": "https://sdolivia.github.io/FineGym/",
+      "license": "dataset-specific"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+opencv-python
+mediapipe==0.10.14
+numpy
+pyttsx3
+edge-tts
+flask
+paramiko
+ultralytics

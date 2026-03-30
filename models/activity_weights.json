@@ -1,0 +1,117 @@
+{
+  "weights": [
+    [
+      -0.7709531188011169,
+      3.0486538410186768,
+      -0.5016310811042786,
+      -0.3429029881954193,
+      -0.9600194692611694
+    ],
+    [
+      0.8798384666442871,
+      -3.053940773010254,
+      -1.7237696647644043,
+      -0.17145149409770966,
+      -0.12527653574943542
+    ],
+    [
+      -1.399999976158142,
+      -0.10000000149011612,
+      -0.6000000238418579,
+      -0.20000000298023224,
+      -0.20000000298023224
+    ],
+    [
+      0.10000000149011612,
+      -1.2999999523162842,
+      -0.20000000298023224,
+      1.2000000476837158,
+      -0.30000001192092896
+    ],
+    [
+      -0.20000000298023224,
+      -0.20000000298023224,
+      0.4000000059604645,
+      -0.10000000149011612,
+      0.800000011920929
+    ]
+  ],
+  "bias": [
+    0.5033187866210938,
+    1.5592938661575317,
+    0.699999988079071,
+    0.20000000298023224,
+    0.10000000149011612
+  ],
+  "class_names": [
+    "idle",
+    "standing",
+    "squat",
+    "pushup",
+    "transition"
+  ],
+  "feature_names": [
+    "knee_angle",
+    "elbow_angle",
+    "torso_tilt",
+    "body_horizontal",
+    "shoulder_hip_diff"
+  ],
+  "normalization": {
+    "knee_angle": "(knee_angle - 120.0) / 40.0",
+    "elbow_angle": "(elbow_angle - 120.0) / 40.0",
+    "torso_tilt": "-torso_tilt / 30.0",
+    "body_horizontal": "float(body_horizontal)",
+    "shoulder_hip_diff": "-shoulder_hip_diff / 0.1"
+  },
+  "training": {
+    "timestamp": 1774687563,
+    "epochs": 700,
+    "learning_rate": 0.22,
+    "l2": 0.001,
+    "allow_partial_classes": true,
+    "trainable_class_indices": [
+      0,
+      1
+    ],
+    "trainable_classes": [
+      "idle",
+      "standing"
+    ],
+    "train_samples": 2159,
+    "val_samples": 541,
+    "train_accuracy": 0.926818,
+    "val_accuracy": 1.0,
+    "class_counts": {
+      "idle": 406,
+      "standing": 2294
+    },
+    "input_files": [
+      "datasets/dataset_all_points.csv"
+    ],
+    "parse_report": {
+      "rows_total": 2700,
+      "rows_used": 2700,
+      "rows_skipped_invalid": 0,
+      "rows_skipped_unmapped": 0,
+      "skipped_unmapped_breakdown": {},
+      "raw_landmark_labels": {
+        "rest": 406,
+        "right_bicep": 369,
+        "left_bicep": 435,
+        "left_shoulder": 373,
+        "right_shoulder": 401,
+        "right_tricep": 399,
+        "left_tricep": 317
+      },
+      "mapped_landmark_labels": {
+        "idle": 406,
+        "standing": 2294
+      },
+      "schema_per_file": {
+        "datasets/dataset_all_points.csv": "landmarks"
+      }
+    },
+    "final_loss": 0.20764948
+  }
+}
