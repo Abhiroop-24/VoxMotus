@@ -2,6 +2,9 @@
 
 Adaptive human-like AI coach for visually impaired users or for a normal user
 
+## Frontend Demo Preview
+https://abhiroop-24.github.io/VoxMotus/
+
 ## Product Goals
 - Blind-first audio coaching with natural feedback and correction priority
 - Real-time human action analysis from dual camera input
