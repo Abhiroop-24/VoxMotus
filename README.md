@@ -1,7 +1,6 @@
 # ANTARDRISHTI
 
-Adaptive human-like AI coach for visually impaired users, aligned to PS4:
-AI-Based Human Action Analysis Using Video.
+Adaptive human-like AI coach for visually impaired users or for a normal user
 
 ## Product Goals
 - Blind-first audio coaching with natural feedback and correction priority
